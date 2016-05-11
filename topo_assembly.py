@@ -6,6 +6,10 @@ from numpy   	     import arange
 from def_fields_icar import *
 from utilities       import *
 
+# settings for topography assemble
+sealevelzero = True    # if elevations smaller then zero occur, these are set to zero
+
+
 # names of the ETOPO1 Bedrock variables
 strHRelev         = 'Band1'
 strHRlat          = 'lat'
@@ -111,9 +115,19 @@ for time in range(len(timedummy)):
 for time in range(len(timedummy)):
   lon_out[time,::] = lon_output_data
   lat_out[time,::] = lat_output_data
-
-  elev_out[time,::] = elev
-  lmask_out[time,::] = 1
+  
+  if sealevelzero:
+    for k in range(len(lat)):
+      for l in range(len(lon)):
+        if elev[k,l] < 0:
+           elev_out[time,k,l] = 0
+           lmask_out[time,k,l] = 2
+        else:
+           elev_out[time,k,l] = elev[k,l]
+           lmask_out[time,k,l] = 1
+  else:
+    elev_out[time,::] = elev
+    lmask_out[time,::] = 1     
 
 print lon_outu
 print lon_outu[:]
