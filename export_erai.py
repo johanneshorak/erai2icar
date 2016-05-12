@@ -13,7 +13,7 @@ g=9.81 # m/s^2
 def write(data,outfile,ifld): 
    ""
    
-   out = Dataset(outfile,'w',format='NETCDF4')
+   out = Dataset(outfile,'w',format='NETCDF3_CLASSIC')
 
    ntim = len(data.time)
    nlon = len(data.lon)

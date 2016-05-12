@@ -27,7 +27,7 @@ print " input     "+inputfileterrain
 print " output    "+outputfileterrain
 print ""
 inp = Dataset(workingdir+"/"+inputfileterrain,'r')
-out = Dataset(workingdir+"/"+outputfileterrain,'w',format='NETCDF4')
+out = Dataset(workingdir+"/"+outputfileterrain,'w',format='NETCDF3_CLASSIC')
 
 print "working on terrain data...",
 lat_var  = inp.variables[strHRlat]
