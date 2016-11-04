@@ -22,12 +22,12 @@ ERAFIELDS.time	= 'time'
 ERAFIELDS.sp   	= 'sp'		# surface pressure
 ERAFIELDS.gh    = 'gh'          # geopotential height
 
-workingdir = os.getcwd()
+workingdir = '' #os.getcwd()
 scriptdir = os.path.dirname(os.path.realpath(__file__))
 
-inputfileforcingAtm = workingdir+"/"+sys.argv[1]
-inputfileforcingSfc = workingdir+"/"+sys.argv[2]
-outputfileforcing   = workingdir+"/"+sys.argv[3]
+inputfileforcingAtm = sys.argv[1]
+inputfileforcingSfc = sys.argv[2]
+outputfileforcing   = sys.argv[3]
 
 print "-----------------------------------------------------------------------------------------------------"
 print "*working directory: "+workingdir

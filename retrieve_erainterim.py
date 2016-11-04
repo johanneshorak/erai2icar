@@ -5,11 +5,11 @@ server = ECMWFDataServer()
 
 strArea = sys.argv[1] #"-7/-79/-11/-75"
 date = sys.argv[2] #["2010-02-15/2010-02-18"]
+outfile = sys.argv[3]
 
 print sys.argv[0]+" started..."
 print sys.argv[0]+": region "+strArea
 print sys.argv[0]+": dates  "+date
-
 
 #for date in strDates:
 server.retrieve({
@@ -28,7 +28,7 @@ server.retrieve({
       'type'      : "an",
       'area'      : strArea,
       'format'    : "netcdf",
-      'target'    : "erai_atm.nc"
+      'target'    : outfile+"_atm.nc"
 })
 server.retrieve({
       'class'     : "ei",
@@ -43,7 +43,7 @@ server.retrieve({
       'time'      : "00:00:00/06:00:00/12:00:00/18:00:00",
       'area'      : strArea,
       'format'    : "netcdf",
-      'target'    : "erai_sfc.nc"
+      'target'    : outfile+"_sfc.nc"
 })
 
 

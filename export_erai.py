@@ -20,15 +20,25 @@ def write(data,outfile,ifld):
    nlat = len(data.lat)
    nlvl = len(data.lvl)
 
+   nlonu = len(data.lon)+1
+   nlatv = len(data.lat)+1
+
    out.createDimension(ifld.dimtime, None)
    out.createDimension(ifld.dimlvl,  nlvl)
    out.createDimension(ifld.dimlat,  nlat)
    out.createDimension(ifld.dimlon,  nlon)
+   
+   #out.createDimension(ifld.dimlon, nlonu)
+   #out.createDimension(ifld.dimlat, nlatv)
+   
    # out.createDimension(ifld.varlatu, nlat)
 
    otime  = out.createVariable(ifld.vartime,  ifld.typtime,  (ifld.dimtime,))
    olon   = out.createVariable(ifld.varlon,   ifld.typlon,   (ifld.dimtime, ifld.dimlat, ifld.dimlon,))
    olat   = out.createVariable(ifld.varlat,   ifld.typlat,   (ifld.dimtime, ifld.dimlat, ifld.dimlon,))
+
+   #olonu  = out.createVariable(ifld.varlonu,  ifld.typlonu,  (ifld.dimtime, ifld.dimlonu,ifld.dimon, ))
+   #olatv  = out.createVariable(ifld.varlatv,  ifld.typlatv,  (ifld.dimtime, ifld.dimlatv,ifld.dimlat,))
 
    # olonu  = out.createVariable(ifld.varlonu,   ifld.typlon,   (ifld.dimtime, ifld.dimlat, ifld.dimlon,))
    # olatu  = out.createVariable(ifld.varlatu,   ifld.typlat,   (ifld.dimtime, ifld.dimlat, ifld.dimlon,))
@@ -40,10 +50,12 @@ def write(data,outfile,ifld):
    #osmois = out.createVariable(ifld.varsmois, ifld.typsmois, (ifld.dimtime, ifld.dimlvl, ifld.dimlat, ifld.dimlon,))
    ogphp  = out.createVariable(ifld.vargphp,  ifld.typgphp,  (ifld.dimtime, ifld.dimlvl, ifld.dimlat, ifld.dimlon,))
    opt    = out.createVariable(ifld.varpt,    ifld.typpt,    (ifld.dimtime, ifld.dimlvl, ifld.dimlat, ifld.dimlon,))
+   #
    opb    = out.createVariable(ifld.varpb,    ifld.typpb,    (ifld.dimtime, ifld.dimlvl, ifld.dimlat, ifld.dimlon,))
    opp    = out.createVariable(ifld.varpp,    ifld.typpp,    (ifld.dimtime, ifld.dimlvl, ifld.dimlat, ifld.dimlon,))
 
    ohgt   = out.createVariable(ifld.varhgt,   ifld.typhgt,   (ifld.dimtime, ifld.dimlat, ifld.dimlon,))
+   #
    ogphb  = out.createVariable(ifld.vargphb,  ifld.typgphb,  (ifld.dimtime, ifld.dimlvl, ifld.dimlat, ifld.dimlon,))
 
    oqvapor= out.createVariable(ifld.varqvapor,ifld.typqvapor,(ifld.dimtime, ifld.dimlvl, ifld.dimlat, ifld.dimlon,))
@@ -80,6 +92,7 @@ def write(data,outfile,ifld):
        oqvapor[n,nlvl-k-1,::]= flipud(data.q[n,k,::])
        ogphp[n,nlvl-k-1,::]  = flipud(data.hgt[n,k,::])
        ogphb[n,nlvl-k-1,::]  = 0
+       opb[n,nlvl-k-1,::]    = 0
        opt[n,nlvl-k-1,::]    = flipud(data.tpot[n,k,::])
        opp[n,nlvl-k-1,::]    = flipud(data.p[n,k,::])
        
