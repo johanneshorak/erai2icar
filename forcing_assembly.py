@@ -20,7 +20,18 @@ ERAFIELDS.lon  	= 'longitude'
 ERAFIELDS.lat	= 'latitude'
 ERAFIELDS.time	= 'time'
 ERAFIELDS.sp   	= 'sp'		# surface pressure
-ERAFIELDS.gh    = 'gh'          # geopotential height
+ERAFIELDS.gh    = 'gh'      # geopotential height
+ERAFIELDS.lspf  = 'lspf'	# large scale precipitation fraction
+ERAFIELDS.lsp	= 'lsp'		# large scale precipitation
+ERAFIELDS.cp	= 'cp'		# convective precipitation
+ERAFIELDS.u10	= 'u10'		# 10 metre u wind component
+ERAFIELDS.v10	= 'v10'		# 10 metre v wind component
+ERAFIELDS.t2m	= 't2m'		# 2 metre temperature
+ERAFIELDS.lcc	= 'lcc'		# low cloud cover
+ERAFIELDS.mcc	= 'mcc'		# medium cloud cover
+ERAFIELDS.hcc	= 'hcc'		# high cloud cover
+ERAFIELDS.tp	= 'tp'		# total precipitation
+
 
 workingdir = '' #os.getcwd()
 scriptdir = os.path.dirname(os.path.realpath(__file__))
@@ -39,7 +50,10 @@ print " output ............. "+outputfileforcing
 print ""
 print "working on forcing data..."
 
-data = Bunch()
-import_erai.load(data,inputfileforcingAtm,inputfileforcingSfc,ERAFIELDS)
+data	= Bunch()
+units	= Bunch()
+descr   = Bunch()
+
+import_erai.load(data,units,inputfileforcingAtm,inputfileforcingSfc,ERAFIELDS)
 import_erai.convert(data)
-export_erai.write(data,outputfileforcing,ICARFIELDS)
+export_erai.write(data,units,outputfileforcing,ICARFIELDS)

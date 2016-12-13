@@ -10,7 +10,7 @@ cp=29.19 # J/mol/K   =1.012 J/g/K
 g=9.81 # m/s^2
 M=0.02896 # kg/mol
 
-def load(data,atmfile,sfcfile,efs):
+def load(data,units,atmfile,sfcfile,efs):
    "this function imports atmospheric and surface data from an ERAI netCDF file"
 
    # data the specifies name and location of coordinate variable file (usually ERA-Interim_coordvars.nc)
@@ -25,6 +25,7 @@ def load(data,atmfile,sfcfile,efs):
    sfc  = Dataset(sfcfile,'r')
    crd  = Dataset(crdfile,'r') # coordvars import from script dir
  
+   # set all variable values
    data.lat   = atm.variables[efs.lat][:]
    data.lon   = atm.variables[efs.lon][:]
    data.time  = atm.variables[efs.time][:]
@@ -35,7 +36,42 @@ def load(data,atmfile,sfcfile,efs):
    data.z     = atm.variables[efs.z][:]  # geopotential at surface
    data.t     = atm.variables[efs.t][:]
 
-   data.sp    = sfc.variables[efs.sp][:]
+   data.sp    	= sfc.variables[efs.sp][:]
+   data.lspf  	= sfc.variables[efs.lspf][:] #large scale precipitation fraction
+   data.lsp   	= sfc.variables[efs.lsp][:]
+   data.cp		= sfc.variables[efs.cp][:]
+   data.u10		= sfc.variables[efs.u10][:]
+   data.v10		= sfc.variables[efs.v10][:]
+   data.t2m		= sfc.variables[efs.t2m][:]
+   data.lcc		= sfc.variables[efs.lcc][:]
+   data.mcc		= sfc.variables[efs.mcc][:]
+   data.hcc		= sfc.variables[efs.hcc][:]
+   data.tp		= sfc.variables[efs.tp][:]
+   
+   # get all variable units
+   units.lat   = atm.variables[efs.lat].units
+   units.lon   = atm.variables[efs.lon].units
+   units.time  = atm.variables[efs.time].units
+   units.q     = atm.variables[efs.q].units
+   units.u     = atm.variables[efs.u].units
+   units.v     = atm.variables[efs.v].units
+   units.z     = atm.variables[efs.z].units
+   units.t     = atm.variables[efs.t].units
+   
+   units.sp    	= sfc.variables[efs.sp].units
+   units.lspf  	= sfc.variables[efs.lspf].units
+   units.lsp   	= sfc.variables[efs.lsp].units
+   units.cp		= sfc.variables[efs.cp].units
+   units.u10	= sfc.variables[efs.u10].units
+   units.v10	= sfc.variables[efs.v10].units
+   units.t2m	= sfc.variables[efs.t2m].units
+   units.lcc	= sfc.variables[efs.lcc].units
+   units.mcc	= sfc.variables[efs.mcc].units
+   units.hcc	= sfc.variables[efs.hcc].units
+   units.tp		= sfc.variables[efs.tp].units
+      
+
+   
 
    # these variables are needed to calculate the pressure at each model level
    data.a_model_alt = crd.variables['a_model_alt'][:]
