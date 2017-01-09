@@ -54,6 +54,7 @@ def write(data,units,outfile,ifld):
    qtsk   = out.createVariable(ifld.vartsk,   ifld.typtsk, (ifld.dimtime, ifld.dimlvl, ifld.dimlat, ifld.dimlon,))
 
    osp		= out.createVariable(ifld.varsp, 	ifld.typsp,		(ifld.dimtime, ifld.dimlat, ifld.dimlon,))
+   '''
    olspf    = out.createVariable(ifld.varlspf,	ifld.typlspf,	(ifld.dimtime, ifld.dimlat, ifld.dimlon,))
    olsp		= out.createVariable(ifld.varlsp,	ifld.typlsp,	(ifld.dimtime, ifld.dimlat, ifld.dimlon,))
    ocp		= out.createVariable(ifld.varcp,	ifld.typcp,		(ifld.dimtime, ifld.dimlat, ifld.dimlon,))
@@ -64,6 +65,8 @@ def write(data,units,outfile,ifld):
    omcc		= out.createVariable(ifld.varmcc,	ifld.typmcc,	(ifld.dimtime, ifld.dimlat, ifld.dimlon,))
    ohcc		= out.createVariable(ifld.varhcc,	ifld.typhcc,	(ifld.dimtime, ifld.dimlat, ifld.dimlon,))
    otp		= out.createVariable(ifld.vartp,	ifld.typtp,		(ifld.dimtime, ifld.dimlat, ifld.dimlon,))
+   '''
+   
    
    olon.units	= ifld.untlon
    olat.units	= ifld.untlat
@@ -81,6 +84,8 @@ def write(data,units,outfile,ifld):
    qtsk.units	= ifld.unttsk
    
    osp.units	= ifld.untsp
+   
+   '''
    olspf.units	= ifld.untlspf
    olsp.units	= ifld.untlsp
    ocp.units	= ifld.untcp
@@ -91,7 +96,7 @@ def write(data,units,outfile,ifld):
    omcc.units	= ifld.untmcc
    ohcc.units	= ifld.unthcc
    otp.units	= ifld.unttp
-   
+   '''
 
    olon.description = ifld.dsclon
    olat.description  = ifld.dsclat
@@ -109,6 +114,7 @@ def write(data,units,outfile,ifld):
    qtsk.description = ifld.dsctsk
    
    osp.description	= ifld.dscsp
+   '''
    olspf.description= ifld.dsclspf
    olsp.description	= ifld.dsclsp
    ocp.description	= ifld.dsccp
@@ -119,7 +125,7 @@ def write(data,units,outfile,ifld):
    omcc.description	= ifld.dscmcc
    ohcc.description	= ifld.dschcc
    otp.description	= ifld.dsctp
-
+   '''
    otime[:]    = data.time
 
    #londata = arange(nlat*nlon)*0.0
@@ -144,6 +150,7 @@ def write(data,units,outfile,ifld):
      ohgt[n,::] = flipud(data.z[n,0,::]/g)
 
      osp[n,::]		= flipud(data.sp[n,::])
+     '''
      olspf[n,::]    = flipud(data.lspf[n,::])
      olsp[n,::]		= flipud(data.lsp[n,::])
      ocp[n,::]		= flipud(data.cp[n,::])
@@ -154,7 +161,7 @@ def write(data,units,outfile,ifld):
      omcc[n,::]		= flipud(data.mcc[n,::])
      ohcc[n,::]		= flipud(data.hcc[n,::])
      otp[n,::]		= flipud(data.tp[n,::])
-
+	 '''
      for k in range(nlvl):
        ou[n,nlvl-k-1,::]     = flipud(data.u[n,k,::])
        ov[n,nlvl-k-1,::]     = flipud(data.v[n,k,::])

@@ -37,6 +37,7 @@ def load(data,units,atmfile,sfcfile,efs):
    data.t     = atm.variables[efs.t][:]
 
    data.sp    	= sfc.variables[efs.sp][:]
+   '''
    data.lspf  	= sfc.variables[efs.lspf][:] #large scale precipitation fraction
    data.lsp   	= sfc.variables[efs.lsp][:]
    data.cp		= sfc.variables[efs.cp][:]
@@ -47,6 +48,7 @@ def load(data,units,atmfile,sfcfile,efs):
    data.mcc		= sfc.variables[efs.mcc][:]
    data.hcc		= sfc.variables[efs.hcc][:]
    data.tp		= sfc.variables[efs.tp][:]
+   '''
    
    # get all variable units
    units.lat   = atm.variables[efs.lat].units
@@ -59,6 +61,7 @@ def load(data,units,atmfile,sfcfile,efs):
    units.t     = atm.variables[efs.t].units
    
    units.sp    	= sfc.variables[efs.sp].units
+   '''
    units.lspf  	= sfc.variables[efs.lspf].units
    units.lsp   	= sfc.variables[efs.lsp].units
    units.cp		= sfc.variables[efs.cp].units
@@ -69,7 +72,7 @@ def load(data,units,atmfile,sfcfile,efs):
    units.mcc	= sfc.variables[efs.mcc].units
    units.hcc	= sfc.variables[efs.hcc].units
    units.tp		= sfc.variables[efs.tp].units
-      
+   '''
 
    
 
@@ -105,7 +108,8 @@ def convert(data):
    data.hgt[:,nlvl-1,::] = data.z[:,0,::]/g
 
    # calculate pressure and geopotential at all model levels
-   for i in range(ntime):
+   for i in range(ntime): # we lose a lot of time in this loops, optimization at least in l loop should be possible.
+     # print i," / ",(ntime-1)
      for j in range(nlat):
        for k in range(nlon):
          data.p[i,:,j,k]   = data.a_model_alt + data.b_model_alt * data.sp[i,j,k] 
@@ -113,6 +117,7 @@ def convert(data):
 	   Tlvl = (data.t[i,l-1,j,k] + data.t[i,l,j,k])/2
 	   dz = - ( (R * Tlvl) / (M * g) ) * log( data.p[i,l-1,j,k] / data.p[i,l,j,k] )
 	   data.hgt[i,l-1,j,k] = data.hgt[i,l,j,k] + dz
+
            #print str(Tlvl) + ' ' + str(dz)
 	   #print 'lvl = '+ str(l)
 

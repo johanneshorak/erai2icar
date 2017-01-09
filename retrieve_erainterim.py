@@ -50,20 +50,19 @@ server.retrieve({
 })
 
 server.retrieve({
-    "class": "ei",
-    "dataset": "interim",
-    "date": date,
-    "area": strArea,
-    "expver": "1",
-    "grid": "0.75/0.75",
-    "levtype": "sfc",
-    "param": "50.128/142.128/134.128/143.128/165.128/166.128/167.128/186.128/187.128/188.128/228.128",
-    "step": "0/6/12",#"3/6/9/12",
-    "stream": "oper",
-    "time": "00:00:00/06:00:00/12:00:00/18:00:00",
-    "type": "fc",
-    "format"    : "netcdf",
-    "target": outfile+"_sfc.nc"
+      'class'     : "ei",
+      'dataset'   : "interim",
+      'date'      : date,
+      'expver'    : "1",
+      'grid'      : "0.75/0.75",
+      'levtype'   : "sfc",
+      'param'     : "134.128",
+      'stream'    : "oper",
+      'step'      : "0",
+      'time'      : "00:00:00/06:00:00/12:00:00/18:00:00",
+      'area'      : strArea,
+      'format'    : "netcdf",
+	  'target'	  : outfile+'_sfc.nc'
 })
 
 # old request for surface variables:

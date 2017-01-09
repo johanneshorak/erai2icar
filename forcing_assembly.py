@@ -21,16 +21,16 @@ ERAFIELDS.lat	= 'latitude'
 ERAFIELDS.time	= 'time'
 ERAFIELDS.sp   	= 'sp'		# surface pressure
 ERAFIELDS.gh    = 'gh'      # geopotential height
-ERAFIELDS.lspf  = 'lspf'	# large scale precipitation fraction
-ERAFIELDS.lsp	= 'lsp'		# large scale precipitation
-ERAFIELDS.cp	= 'cp'		# convective precipitation
-ERAFIELDS.u10	= 'u10'		# 10 metre u wind component
-ERAFIELDS.v10	= 'v10'		# 10 metre v wind component
-ERAFIELDS.t2m	= 't2m'		# 2 metre temperature
-ERAFIELDS.lcc	= 'lcc'		# low cloud cover
-ERAFIELDS.mcc	= 'mcc'		# medium cloud cover
-ERAFIELDS.hcc	= 'hcc'		# high cloud cover
-ERAFIELDS.tp	= 'tp'		# total precipitation
+#ERAFIELDS.lspf  = 'lspf'	# large scale precipitation fraction
+#ERAFIELDS.lsp	= 'lsp'		# large scale precipitation
+#ERAFIELDS.cp	= 'cp'		# convective precipitation
+#ERAFIELDS.u10	= 'u10'		# 10 metre u wind component
+#ERAFIELDS.v10	= 'v10'		# 10 metre v wind component
+#ERAFIELDS.t2m	= 't2m'		# 2 metre temperature
+#ERAFIELDS.lcc	= 'lcc'		# low cloud cover
+#ERAFIELDS.mcc	= 'mcc'		# medium cloud cover
+#ERAFIELDS.hcc	= 'hcc'		# high cloud cover
+#ERAFIELDS.tp	= 'tp'		# total precipitation
 
 
 workingdir = '' #os.getcwd()
