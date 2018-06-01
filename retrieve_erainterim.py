@@ -6,7 +6,7 @@ from ecmwfapi import ECMWFDataServer
 server = ECMWFDataServer()
 
 strArea = sys.argv[1] #"-7/-79/-11/-75"
-date = sys.argv[2] #["2010-02-15/2010-02-18"]
+date = sys.argv[2] #["2010-02-15/to/2010-02-18"]
 outfile = sys.argv[3]
 
 # add one day before and one day after requested period to reanalysis data
@@ -16,12 +16,12 @@ date_array	= string.split(date,"/")
 date_start	= datetime.strptime(date_array[0],"%Y-%m-%d")
 date_end	= datetime.strptime(date_array[2],"%Y-%m-%d")
 
-date_start_new 	= date_start - timedelta(days=1)
+date_start_new 	= date_start
 date_end_new	= date_end + timedelta(days=1)
 
 date_start_string 	= str(date_start_new.year)+"-"+str(date_start_new.month).zfill(2)+"-"+str(date_start_new.day).zfill(2)
 date_end_string 	= str(date_end_new.year)+"-"+str(date_end_new.month).zfill(2)+"-"+str(date_end_new.day).zfill(2)
-date_string = date_start_string+"/"+date_end_string
+date_string = date_start_string+"/to/"+date_end_string
 
 
 print sys.argv[0]+" started..."
@@ -30,15 +30,17 @@ print sys.argv[0]+": dates  "+date_string
 
 #for date in strDates:
 
+# liquid cloud water and ice water: "246.128/247.128"
+
 server.retrieve({
       'class'     : "ei",
       'dataset'   : "interim",
-      'date'      : date,
+      'date'      : date_string,
       'expver'    : "1",
       'grid'      : "0.75/0.75",
       'levelist'  : "all",
       'levtype'   : "ml",
-      'param'     : "129.128/130.128/131.128/132.128/133.128/52.162/156.128",
+      'param'     : "129.128/130.128/131.128/132.128/133.128/52.162/156.128/246.128/247.128",
       'step'      : "0",
       'stream'    : "oper",
       'target'    : "CHANGEME",
@@ -52,7 +54,7 @@ server.retrieve({
 server.retrieve({
       'class'     : "ei",
       'dataset'   : "interim",
-      'date'      : date,
+      'date'      : date_string,
       'expver'    : "1",
       'grid'      : "0.75/0.75",
       'levtype'   : "sfc",

@@ -42,6 +42,6 @@ python ./retrieve_erainterim.py $REGION $DATES $outfile
 echo "...[done]"
 
 echo "assembling forcing..."
-python ./forcing_assembly.py erai_atm.nc erai_sfc.nc $outfile
+python ./forcing_assembly.py erai_atm.nc erai_sfc.nc $outfile.nc
 echo "...[done]" 
 

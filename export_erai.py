@@ -166,6 +166,8 @@ def write(data,units,outfile,ifld):
        ou[n,nlvl-k-1,::]     = flipud(data.u[n,k,::])
        ov[n,nlvl-k-1,::]     = flipud(data.v[n,k,::])
        oqvapor[n,nlvl-k-1,::]= flipud(data.q[n,k,::])
+       oqcloud[n,nlvl-k-1,::]= flipud(data.clwc[n,k,::])
+       oqice[n,nlvl-k-1,::]  = flipud(data.ciwc[n,k,::])
        ogphp[n,nlvl-k-1,::]  = flipud(data.hgt[n,k,::])
        ogphb[n,nlvl-k-1,::]  = 0
        opb[n,nlvl-k-1,::]    = 0

@@ -31,6 +31,8 @@ def load(data,units,atmfile,sfcfile,efs):
    data.time  = atm.variables[efs.time][:]
    data.lvl   = atm.variables[efs.lvl][:]
    data.q     = atm.variables[efs.q][:]
+   data.clwc  = atm.variables[efs.clwc][:]
+   data.ciwc  = atm.variables[efs.ciwc][:]
    data.u     = atm.variables[efs.u][:]
    data.v     = atm.variables[efs.v][:]
    data.z     = atm.variables[efs.z][:]  # geopotential at surface
@@ -55,6 +57,8 @@ def load(data,units,atmfile,sfcfile,efs):
    units.lon   = atm.variables[efs.lon].units
    units.time  = atm.variables[efs.time].units
    units.q     = atm.variables[efs.q].units
+   units.clwc  = atm.variables[efs.clwc].units
+   units.ciwc  = atm.variables[efs.ciwc].units
    units.u     = atm.variables[efs.u].units
    units.v     = atm.variables[efs.v].units
    units.z     = atm.variables[efs.z].units
