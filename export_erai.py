@@ -38,6 +38,8 @@ def write(data,units,outfile,ifld):
 
    ou     = out.createVariable(ifld.varu,     ifld.typu,     (ifld.dimtime, ifld.dimlvl, ifld.dimlat, ifld.dimlon,))
    ov     = out.createVariable(ifld.varv,     ifld.typv,     (ifld.dimtime, ifld.dimlvl, ifld.dimlat, ifld.dimlon,))
+   ow     = out.createVariable(ifld.varw,     ifld.typw,     (ifld.dimtime, ifld.dimlvl, ifld.dimlat, ifld.dimlon,))
+   od     = out.createVariable(ifld.vard,     ifld.typd,     (ifld.dimtime, ifld.dimlvl, ifld.dimlat, ifld.dimlon,))
    ogphp  = out.createVariable(ifld.vargphp,  ifld.typgphp,  (ifld.dimtime, ifld.dimlvl, ifld.dimlat, ifld.dimlon,))
    opt    = out.createVariable(ifld.varpt,    ifld.typpt,    (ifld.dimtime, ifld.dimlvl, ifld.dimlat, ifld.dimlon,))
    
@@ -72,6 +74,8 @@ def write(data,units,outfile,ifld):
    olat.units	= ifld.untlat
    ou.units		= ifld.untu
    ov.units		= ifld.untv
+   ow.units		= ifld.untw
+   od.units		= ifld.untd
    ogphp.units	= ifld.untgphp
    opt.units	= ifld.untpt
    opb.units	= ifld.untpb
@@ -102,6 +106,8 @@ def write(data,units,outfile,ifld):
    olat.description  = ifld.dsclat
    ou.description = ifld.dscu
    ov.description = ifld.dscv
+   ow.description = ifld.dscw
+   od.description = ifld.dscd
    ogphp.description = ifld.dscgphp
    opt.description = ifld.dscpt
    opb.description = ifld.dscpb
@@ -135,6 +141,8 @@ def write(data,units,outfile,ifld):
    latdata = prepare_array(nlat,nlon)
    udata   = prepare_array(ntim,nlat,nlon)
    vdata   = prepare_array(ntim,nlat,nlon)
+   wdata   = prepare_array(ntim,nlat,nlon)
+   ddata   = prepare_array(ntim,nlat,nlon)
 
    londata[:,:] = data.lon
 
@@ -165,6 +173,8 @@ def write(data,units,outfile,ifld):
      for k in range(nlvl):
        ou[n,nlvl-k-1,::]     = flipud(data.u[n,k,::])
        ov[n,nlvl-k-1,::]     = flipud(data.v[n,k,::])
+       ow[n,nlvl-k-1,::]     = flipud(data.w[n,k,::])
+       od[n,nlvl-k-1,::]     = flipud(data.d[n,k,::])
        oqvapor[n,nlvl-k-1,::]= flipud(data.q[n,k,::])
        oqcloud[n,nlvl-k-1,::]= flipud(data.clwc[n,k,::])
        oqice[n,nlvl-k-1,::]  = flipud(data.ciwc[n,k,::])

@@ -35,6 +35,8 @@ def load(data,units,atmfile,sfcfile,efs):
    data.ciwc  = atm.variables[efs.ciwc][:]
    data.u     = atm.variables[efs.u][:]
    data.v     = atm.variables[efs.v][:]
+   data.w     = atm.variables[efs.w][:]
+   data.d     = atm.variables[efs.d][:]
    data.z     = atm.variables[efs.z][:]  # geopotential at surface
    data.t     = atm.variables[efs.t][:]
 
@@ -61,6 +63,8 @@ def load(data,units,atmfile,sfcfile,efs):
    units.ciwc  = atm.variables[efs.ciwc].units
    units.u     = atm.variables[efs.u].units
    units.v     = atm.variables[efs.v].units
+   units.w     = atm.variables[efs.w].units
+   units.d     = atm.variables[efs.d].units
    units.z     = atm.variables[efs.z].units
    units.t     = atm.variables[efs.t].units
    
@@ -77,8 +81,6 @@ def load(data,units,atmfile,sfcfile,efs):
    units.hcc	= sfc.variables[efs.hcc].units
    units.tp		= sfc.variables[efs.tp].units
    '''
-
-   
 
    # these variables are needed to calculate the pressure at each model level
    data.a_model_alt = crd.variables['a_model_alt'][:]
@@ -107,7 +109,7 @@ def convert(data):
    data.tpot = prepare_array(ntime,nlvl,nlat,nlon)
 
    # calculate geopotential height of surface
-   #data.hgt[:,0,::] = data.z[:,0,::]/g
+   # data.hgt[:,0,::] = data.z[:,0,::]/g
 
    data.hgt[:,nlvl-1,::] = data.z[:,0,::]/g
 

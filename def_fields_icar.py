@@ -66,6 +66,16 @@ ICARFIELDS.typv = 'f4'
 ICARFIELDS.dscv = 'y-wind component'
 ICARFIELDS.untv = 'm s**-1'
 
+ICARFIELDS.varw = 'W'           # z-wind component
+ICARFIELDS.typw = 'f4'
+ICARFIELDS.dscw = 'z-wind component'
+ICARFIELDS.untw = 'm s**-1'
+
+ICARFIELDS.vard = 'D'           # divergence
+ICARFIELDS.typd = 'f4'
+ICARFIELDS.dscd = 'divergence'
+ICARFIELDS.untd = 's**-1'
+
 ICARFIELDS.varqvapor = 'QVAPOR'
 ICARFIELDS.typqvapor = 'f4'
 ICARFIELDS.dscqvapor = 'specific humidity'
