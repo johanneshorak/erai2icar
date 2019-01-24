@@ -44,15 +44,15 @@ inputfileforcingAtm = sys.argv[1]
 inputfileforcingSfc = sys.argv[2]
 outputfileforcing   = sys.argv[3]
 
-print "-----------------------------------------------------------------------------------------------------"
-print "*working directory: "+workingdir
-print ""
-print "*forcing files: "
-print " input atmosphere ... "+inputfileforcingAtm
-print " input surface ...... "+inputfileforcingSfc
-print " output ............. "+outputfileforcing
-print ""
-print "working on forcing data..."
+print("-----------------------------------------------------------------------------------------------------")
+print("*working directory: "+workingdir)
+print("")
+print("*forcing files: ")
+print(" input atmosphere ... "+inputfileforcingAtm)
+print(" input surface ...... "+inputfileforcingSfc)
+print(" output ............. "+outputfileforcing)
+print("")
+print("working on forcing data...")
 
 data	= Bunch()
 units	= Bunch()

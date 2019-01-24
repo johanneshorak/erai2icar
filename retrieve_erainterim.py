@@ -12,7 +12,7 @@ outfile = sys.argv[3]
 # add one day before and one day after requested period to reanalysis data
 # first: split the string at /
 # date usually (must) be in format: %Y-%m-%d/to/%Y-%m-%d
-date_array	= string.split(date,"/")
+date_array	= date.split("/")
 date_start	= datetime.strptime(date_array[0],"%Y-%m-%d")
 date_end	= datetime.strptime(date_array[2],"%Y-%m-%d")
 
@@ -24,9 +24,9 @@ date_end_string 	= str(date_end_new.year)+"-"+str(date_end_new.month).zfill(2)+"
 date_string = date_start_string+"/to/"+date_end_string
 
 
-print sys.argv[0]+" started..."
-print sys.argv[0]+": region "+strArea
-print sys.argv[0]+": dates  "+date_string
+print(sys.argv[0]+" started...")
+print(sys.argv[0]+": region "+strArea)
+print(sys.argv[0]+": dates  "+date_string)
 
 #for date in strDates:
 
@@ -87,4 +87,4 @@ server.retrieve({
 
 
 
-print sys.argv[0]+" finished"
+print(sys.argv[0]+" finished")

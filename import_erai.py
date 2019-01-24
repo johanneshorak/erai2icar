@@ -120,12 +120,9 @@ def convert(data):
        for k in range(nlon):
          data.p[i,:,j,k]   = data.a_model_alt + data.b_model_alt * data.sp[i,j,k] 
          for l in range(nlvl-1,0,-1): # run through the model levels bottoim to top
-	   Tlvl = (data.t[i,l-1,j,k] + data.t[i,l,j,k])/2
-	   dz = - ( (R * Tlvl) / (M * g) ) * log( data.p[i,l-1,j,k] / data.p[i,l,j,k] )
-	   data.hgt[i,l-1,j,k] = data.hgt[i,l,j,k] + dz
-
-           #print str(Tlvl) + ' ' + str(dz)
-	   #print 'lvl = '+ str(l)
+           Tlvl = (data.t[i,l-1,j,k] + data.t[i,l,j,k])/2
+           dz = - ( (R * Tlvl) / (M * g) ) * log( data.p[i,l-1,j,k] / data.p[i,l,j,k] )
+           data.hgt[i,l-1,j,k] = data.hgt[i,l,j,k] + dz
 
    # calculate potential temperature
    pii=(100000.0/data.p)**(R/cp)
