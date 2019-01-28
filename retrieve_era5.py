@@ -65,7 +65,7 @@ outnameatm = '{:s}_atm.nc'.format(outfile)
 
 
 # query atmospheric data
-
+'''
 r = c.retrieve('reanalysis-era5-complete', {
     'class'   : 'ea',
     'expver'  : '1',
@@ -82,7 +82,7 @@ r = c.retrieve('reanalysis-era5-complete', {
 })
 
 r.download(outnameatm)
-
+'''
 '''
 c.retrieve("reanalysis-era5-complete", {
         "product_type": "reanalysis",
@@ -110,11 +110,11 @@ c.retrieve("reanalysis-era5-complete", {
 '''
 #r.download(outnameatm)
 
-'''
+
 # query surface data
 r = c.retrieve(
     'reanalysis-era5-single-levels', {
-            'variable'    : ['134.128'],          # query surface pressure
+            'variable'    : ['129.128/134.128'],          # query surface pressure
             'area'        : strArea,
             'grid'        : '0.25/0.25',
             'product_type': 'reanalysis',
@@ -136,4 +136,4 @@ r = c.retrieve(
             'format'      : 'netcdf'
     })
 r.download(outnamesfc)
-'''
+
