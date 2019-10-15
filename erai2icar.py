@@ -27,7 +27,7 @@ except:
     sys.exit(1)
         
 try:
-    ml_df  = pd.read_csv('./data/model_level.csv',index_col='n')
+    ml_df  = pd.read_csv('./data/model_level_erai.csv',index_col='n')
 except:
     print(' error opening model level data!')
     sys.exit(1)
