@@ -31,6 +31,8 @@ print(sys.argv[0]+": dates  "+date_string)
 #for date in strDates:
 
 # liquid cloud water and ice water: "246.128/247.128"
+# specific rain water content 75.128
+# specific snow water content 76.128
 
 server.retrieve({
       'class'     : "ei",
