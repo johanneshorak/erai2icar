@@ -15,13 +15,13 @@ sfc_nc = sys.argv[2]
 outname = sys.argv[3]
 
 try:
-    atm_ds = xa.open_dataset('./{:s}'.format(atm_nc))
+    atm_ds = xa.open_dataset('{:s}'.format(atm_nc))
 except:
     print(' error opening {:s}!'.format(atm_nc))
     sys.exit(1)
 
 try:
-    sfc_ds = xa.open_dataset('./{:s}'.format(sfc_nc))
+    sfc_ds = xa.open_dataset('{:s}'.format(sfc_nc))
 except:
     print(' error opening {:s}!'.format(sfc_nc))
     sys.exit(1)
@@ -229,4 +229,4 @@ for n in range(len(varmap)):
         frc_ds[frcvar].attrs[key] = val
         
         
-frc_ds.to_netcdf('./{:s}'.format(outname))
+frc_ds.to_netcdf('{:s}'.format(outname))
