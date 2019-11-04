@@ -33,7 +33,7 @@ except:
     sys.exit(1)
 
 
-#test whether surface and atmospheric dataset coordinates match
+# test whether surface and atmospheric dataset coordinates match
 
 if False in (sfc_ds.time == atm_ds.time).values:
     print(' time dimension not matching')
@@ -50,12 +50,14 @@ if False in (sfc_ds.latitude == atm_ds.latitude).values:
 if 'z' in atm_ds.data_vars:
     atm_ds['z'] = atm_ds.z.sel(level=1)
 
+# merge both datasets into one
 erai_ds = atm_ds.merge(sfc_ds)
 
-gpcalc.set_data(erai_ds,ml_df,60)    # set the data required for calculations
+
+gpcalc.set_data(erai_ds,ml_df,60)    # set the data required for geopotential calculations
 
 # -
-# create a dataset that contains the ak and bk coefficients of ERA5
+# create a dataset that contains the ak and bk coefficients of ERAI
 # later needed to calculate pressure at each model level from surface pressure
 # -
 ab_ds = xa.Dataset(
@@ -82,12 +84,8 @@ p           = np.zeros(Nt*Nlvl*Nlon*Nlat).reshape(Nt,Nlvl,Nlat,Nlon)  # pressure
 ph          = np.zeros(Nt*Nlvl*Nlon*Nlat).reshape(Nt,Nlvl,Nlat,Nlon)  # geopotential height
 
 print(' calculating pressure and geopotential at model levels...')
-print(' Nlvl = {:n}'.format(Nlvl))
-print(' DEBUG')
 
-print(' looping from {:n} to {:n}'.format(0,Nlvl))
-
-#sys.exit(1)
+# loop thorough all vertical levels of the data and calculate geopotential height of each grid cell there
 for n in range(0,Nlvl):
     lvl  = erai_ds.level.values[n]
     ak1  = ml_df.loc[lvl,'a [Pa]']  # coef. for half level above (lower pressure)
@@ -102,25 +100,27 @@ for n in range(0,Nlvl):
 
     
     ps  = erai_ds.sp[:].values
-    print('  {:4n} {:4n} | {:10.4f} {:10.4f} | {:10.4f} {:10.4f} |'.format(n,lvl,ak0,bk0,ak1,bk1))
 
-    ph[:,n-1] = gpcalc.get_phi(lvl)/9.81   # get_phi calculates geopotential at full model level
+    ph[:,n] = gpcalc.get_phi(lvl)/9.81   # get_phi calculates geopotential at full model level
     
     if lvl == 0:
-        p[:,n-1] = ps*np.nan
+        p[:,n] = ps*np.nan
     else:
-        p[:,n-1] = 0.5*((ak0+bk0*ps)+(ak1+bk1*ps))
-        
-    #sys.exit(1)
+        p[:,n] = 0.5*((ak0+bk0*ps)+(ak1+bk1*ps))
+
+    print('  {:4n} {:4n} | {:10.4f} {:10.4f} | {:10.4f} {:10.4f} | {:10.1f}'.format(n,lvl,ak0,bk0,ak1,bk1,p[0,n-1,0,0]))
+
+print(p.shape)
+print(Nlvl)
 
 erai_ds['p'] = (['time','level','latitude','longitude'],p)
 erai_ds['ph'] = (['time','level','latitude','longitude'],ph)
 
 
 # prepare the data arrays
-west_east = range(0,Nlon)
-south_north = range(0,Nlon)
-bottom_top  = (gpcalc.lvlmax-erai_ds.level)[::-1]                    # reverse order, 137 is lowest level in ERA5, is here now 0
+west_east   = np.array(list(range(0,Nlon)))
+south_north = np.array(list(range(0,Nlat)))
+bottom_top  = (gpcalc.lvlmax-erai_ds.level.values)[::-1]                    # reverse order, 60 is lowest level in ERAI, for ICAR it should be 0
 
 xlong       = np.zeros(Nt*Nlon*Nlat).reshape(Nt,Nlat,Nlon)
 xlat        = np.zeros(Nt*Nlon*Nlat).reshape(Nt,Nlat,Nlon)
@@ -133,21 +133,26 @@ V           = np.zeros(Nt*Nlvl*Nlon*Nlat).reshape(Nt,Nlvl,Nlat,Nlon)
 QVAPOR      = np.zeros(Nt*Nlvl*Nlon*Nlat).reshape(Nt,Nlvl,Nlat,Nlon)
 QCLOUD      = np.zeros(Nt*Nlvl*Nlon*Nlat).reshape(Nt,Nlvl,Nlat,Nlon)
 QICE        = np.zeros(Nt*Nlvl*Nlon*Nlat).reshape(Nt,Nlvl,Nlat,Nlon)
+
 PHB         = np.zeros(Nt*Nlvl*Nlon*Nlat).reshape(Nt,Nlvl,Nlat,Nlon)   # not used
 PB          = np.zeros(Nt*Nlvl*Nlon*Nlat).reshape(Nt,Nlvl,Nlat,Nlon)   # not used
 TSK         = np.zeros(Nt*Nlvl*Nlon*Nlat).reshape(Nt,Nlvl,Nlat,Nlon)   # not used
 TH          = np.zeros(Nt*Nlvl*Nlon*Nlat).reshape(Nt,Nlvl,Nlat,Nlon)   # potential temperature
 
 # set values
-U          = erai_ds.u[:,::-1,::-1,:]
-V          = erai_ds.v[:,::-1,::-1,:]
-P          = erai_ds.p[:,::-1,::-1,:]
-QVAPOR     = erai_ds.q[:,::-1,::-1,:]
-QCLOUD     = erai_ds.clwc[:,::-1,::-1,:]
-QICE       = erai_ds.ciwc[:,::-1,::-1,:]
-PH         = erai_ds.ph[:,::-1,::-1,:]
-HGT        = erai_ds.z[:,::-1,:]/9.81
-TH         = erai_ds.t[:,::-1,:]*((10.**5)/P)**(0.2854)
+U          = erai_ds.u[:,::-1,::-1,:].values
+V          = erai_ds.v[:,::-1,::-1,:].values
+P          = erai_ds.p[:,::-1,::-1,:].values
+QVAPOR     = erai_ds.q[:,::-1,::-1,:].values/(1.0-erai_ds.q[:,::-1,::-1,:].values)
+QCLOUD     = erai_ds.clwc[:,::-1,::-1,:].values/(1.0-erai_ds.clwc[:,::-1,::-1,:].values)
+QICE       = erai_ds.ciwc[:,::-1,::-1,:].values/(1.0-erai_ds.ciwc[:,::-1,::-1,:].values)
+PH         = erai_ds.ph[:,::-1,::-1,:].values
+HGT        = erai_ds.z[:,::-1,:].values/9.81
+TH         = erai_ds.t[:,::-1,::-1,:].values*((10.**5)/P)**(0.2854)
+
+#print(p[:,:,::-1,:][0,:,0,0])
+#print(erai_ds.p[:,:,::-1,:].values[0,:,0,0])
+#print(erai_ds.p[:,::-1,::-1,:].values[0,:,0,0])
 
 xlong[:,:] = erai_ds.longitude
 
@@ -157,28 +162,36 @@ for ny in range(Nlat):
 frc_ds = xa.Dataset(
     coords={
         'Time'        : Time,
-      #  'west_east'   : west_east,
-      #  'south_north' : south_north
+        'bottom_top'  : bottom_top,
+        'west_east'   : west_east,
+        'south_north' : south_north
     },
     data_vars={
         'XLONG'    : (['Time','south_north','west_east'],xlong),
         'XLAT'     : (['Time','south_north','west_east'],xlat),
+        
         'HGT'      : (['Time','south_north','west_east'],HGT),
+        
         'U'        : (['Time','bottom_top','south_north','west_east'],U),
         'V'        : (['Time','bottom_top','south_north','west_east'],V),
+
+        'TH'       : (['Time','bottom_top','south_north','west_east'],TH),   
+        
         'P'        : (['Time','bottom_top','south_north','west_east'],P),
+        'PB'        : (['Time','bottom_top','south_north','west_east'],PB),
+        
         'PH'       : (['Time','bottom_top','south_north','west_east'],PH),
+        'PHB'      : (['Time','bottom_top','south_north','west_east'],PHB),
+        
         'QVAPOR'   : (['Time','bottom_top','south_north','west_east'],QVAPOR),
         'QCLOUD'   : (['Time','bottom_top','south_north','west_east'],QCLOUD),
         'QICE'     : (['Time','bottom_top','south_north','west_east'],QICE),
-        'PB'       : (['Time','bottom_top','south_north','west_east'],PB),
-        'PHB'      : (['Time','bottom_top','south_north','west_east'],PHB),
+        
         'TSK'      : (['Time','bottom_top','south_north','west_east'],TSK),
-        'TH'       : (['Time','bottom_top','south_north','west_east'],TH)        
     }
 )
 
-# copy the attributes of variables that have a correspondence in the era5 dataset
+# copy the attributes of variables that have a correspondence in the erai dataset
 
 varmap=[
     ['u','U'],
