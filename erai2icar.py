@@ -4,6 +4,7 @@ import pandas as pd
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 import lib.gpcalc as gpcalc
+import lib.atmosphere as atm
 import sys as sys
 
 if len(sys.argv) < 4:
@@ -118,8 +119,8 @@ erai_ds['ph'] = (['time','level','latitude','longitude'],ph)
 
 
 # prepare the data arrays
-west_east   = np.array(list(range(0,Nlon)))
-south_north = np.array(list(range(0,Nlat)))
+west_east   = list(range(0,Nlon))
+south_north = list(range(0,Nlat))
 bottom_top  = (gpcalc.lvlmax-erai_ds.level.values)[::-1]                    # reverse order, 60 is lowest level in ERAI, for ICAR it should be 0
 
 xlong       = np.zeros(Nt*Nlon*Nlat).reshape(Nt,Nlat,Nlon)
@@ -139,7 +140,13 @@ PB          = np.zeros(Nt*Nlvl*Nlon*Nlat).reshape(Nt,Nlvl,Nlat,Nlon)   # not use
 TSK         = np.zeros(Nt*Nlvl*Nlon*Nlat).reshape(Nt,Nlvl,Nlat,Nlon)   # not used
 TH          = np.zeros(Nt*Nlvl*Nlon*Nlat).reshape(Nt,Nlvl,Nlat,Nlon)   # potential temperature
 
-# set values
+N_arr       = np.zeros(Nt*Nlvl*Nlon*Nlat).reshape(Nt,Nlvl,Nlat,Nlon)   # Brunt-Väisälä frequency of forcing data grid cell
+N2_arr      = np.zeros(Nt*Nlvl*Nlon*Nlat).reshape(Nt,Nlvl,Nlat,Nlon)   # N2_arr = N_arr**2
+N2True_arr  = np.zeros(Nt*Nlvl*Nlon*Nlat).reshape(Nt,Nlvl,Nlat,Nlon)   # True N2 without ICAR adjustments
+Nmoist      = np.zeros(Nt*Nlvl*Nlon*Nlat).reshape(Nt,Nlvl,Nlat,Nlon)   # Indicates whether moist or dry N was used in cell
+#=======================================================================
+#= set values in forcing
+#=======================================================================
 U          = erai_ds.u[:,::-1,::-1,:].values
 V          = erai_ds.v[:,::-1,::-1,:].values
 P          = erai_ds.p[:,::-1,::-1,:].values
@@ -149,6 +156,90 @@ QICE       = erai_ds.ciwc[:,::-1,::-1,:].values/(1.0-erai_ds.ciwc[:,::-1,::-1,:]
 PH         = erai_ds.ph[:,::-1,::-1,:].values
 HGT        = erai_ds.z[:,::-1,:].values/9.81
 TH         = erai_ds.t[:,::-1,::-1,:].values*((10.**5)/P)**(0.2854)
+
+#=======================================================================
+#= calculate Brunt-Väisälä frequency
+#=======================================================================
+TABS = atm.t_from_tpot(tpot=TH,p=P)         # needed for calcuations
+
+# these are some settings that tailor the N field for the use with ICAR
+# e.g. ICAR enforces min/max values of N and decides, based on a threshold
+# whether to calculate the moist or dry Brunt-Väisälä frequency.
+N2_min = 1*10**-7      # minimum N allowed
+N2_max = 6*10**-4      # maximum N allowed
+moist_th = 10**-7     # threshold of when to calculate moist N
+
+# this would have to consider snow and ice as well, but ERAI doesn't calculate those.
+MRMOISTURE = QCLOUD+QICE
+
+print('calculating brunt-vaisala frequency...')
+# calculation loop
+for nt in range(Nt):
+    if nt%10 == 0:
+        print('  timestep {:n}/{:n}'.format(nt,Nt))
+        
+    for nx in range(Nlon):
+        for ny in range(Nlat):
+            z_arr  = PH[nt,:,ny,nx]
+            th_arr = TH[nt,:,ny,nx]
+                    
+            # decide whether to calculate dry or moist stability:
+            mrmoisture_arr = MRMOISTURE[nt,:,ny,nx]
+            
+            N2_col  = np.zeros(Nlvl)
+            N2m_col = np.zeros(Nlvl)
+            
+            N2_col[:-1] = atm.calc_dry_stability_squared(
+                    th_top = th_arr[1:],
+                    th_bot = th_arr[:-1],
+                    z_top  = z_arr[1:],
+                    z_bot  = z_arr[:-1]
+                )
+            
+            if len(mrmoisture_arr[mrmoisture_arr <  moist_th] > 0):
+                N2m_col[:-1] = atm.calc_moist_stability_squared(
+                    t_top   = TABS[nt,1:,ny,nx],
+                    t_bot   = TABS[nt,:-1,ny,nx],
+                    mrv_top = QVAPOR[nt,1:,ny,nx],
+                    mrv_bot = QVAPOR[nt,:-1,ny,nx],
+                    mrc     = 0.5*(QCLOUD[nt,1:,ny,nx]+QCLOUD[nt,:-1,ny,nx]),
+                    z_top   = z_arr[1:],
+                    z_bot   = z_arr[:-1]
+                )    
+            
+            # since we can't calculate a value for the topmost level,
+            # we assign the one from the second topmost level to it
+            N2_col[-1]  = N2_col[-2]
+            N2m_col[-1] = N2m_col[-2]
+            
+            # Save the unmodified N2 values to an array. Whether moist/dry
+            # N2 is chosen will depend on the moisture threshold moist_th
+            # The modifications for ICAR are saved to a different array
+            # further below.
+            N2True_arr[nt,:,ny,nx][mrmoisture_arr <  moist_th] = N2_col[mrmoisture_arr <  moist_th]
+            N2True_arr[nt,:,ny,nx][mrmoisture_arr >= moist_th] = N2m_col[mrmoisture_arr >= moist_th]
+            
+            # save whether moist or dry N was used in grid cell
+            Nmoist[nt,:,ny,nx][mrmoisture_arr <  moist_th] = 0
+            Nmoist[nt,:,ny,nx][mrmoisture_arr >= moist_th] = 1
+            
+            # replace N2 values < 0 or smaller then N2_min with N2_min
+            N2_col[ (N2_col  < 0) | (N2_col  < N2_min)] = N2_min
+            N2m_col[(N2m_col < 0) | (N2m_col < N2_min)] = N2_min
+            
+            # replace N2 values > N2_max with N2_max
+            N2_col[ N2_col  > N2_max] = N2_max
+            N2m_col[N2m_col > N2_max] = N2_max
+            
+            # Now save the modified for ICAR N2 to an array. SetN2 to N2 if moisture is
+            # below threshold, or to N2m if moisture is above the threshold.
+            N2_arr[nt,:,ny,nx][mrmoisture_arr <  moist_th] = N2_col[mrmoisture_arr <  moist_th]
+            N2_arr[nt,:,ny,nx][mrmoisture_arr >= moist_th] = N2m_col[mrmoisture_arr >= moist_th]
+
+#=======================================================================
+#= Brunt-Väisälä calculations are done
+#=======================================================================
+logN2_out = np.log(N2_arr) # ICAR stores N as log(N**2) - so this is why we take the natural log here
 
 #print(p[:,:,::-1,:][0,:,0,0])
 #print(erai_ds.p[:,:,::-1,:].values[0,:,0,0])
@@ -188,6 +279,10 @@ frc_ds = xa.Dataset(
         'QICE'     : (['Time','bottom_top','south_north','west_east'],QICE),
         
         'TSK'      : (['Time','bottom_top','south_north','west_east'],TSK),
+        
+        'logN2ICAR': (['Time','bottom_top','south_north','west_east'],logN2_out),
+        'logN2EARI': (['Time','bottom_top','south_north','west_east'],N2True_arr),
+        'Nmethod'  : (['Time','bottom_top','south_north','west_east'],Nmoist),
     }
 )
 
@@ -213,6 +308,19 @@ frc_ds['PH'].attrs['units']         = 'm'
 frc_ds['PH'].attrs['long_name']     = 'geopotential height of grid cell'
 frc_ds['PH'].attrs['standard_name'] = 'geopotential_height'
 
+frc_ds['logN2ICAR'].attrs['units']         = 'log s**-2'
+frc_ds['logN2ICAR'].attrs['long_name']     = 'natural log of the squared Brunt Vaisala frequency with modifactions for ICAR'
+frc_ds['logN2ICAR'].attrs['standard_name'] = 'natural log of the squared Brunt Vaisala frequency'
+
+frc_ds['logN2EARI'].attrs['units']         = 's**-2'
+frc_ds['logN2EARI'].attrs['long_name']     = 'squared Brunt Vaisala frequency calculated from ERAI data'
+frc_ds['logN2EARI'].attrs['standard_name'] = 'squared Brunt Vaisala frequency'
+
+frc_ds['Nmethod'].attrs['units']         = '1'
+frc_ds['Nmethod'].attrs['desc']          = 'dry N ... 0, moist N ... 1'
+frc_ds['Nmethod'].attrs['long_name']     = 'N calculation method'
+frc_ds['Nmethod'].attrs['standard_name'] = 'N calculation method'
+
 frc_ds['TH'].attrs['units']         = 'K'
 frc_ds['TH'].attrs['long_name']     = 'potential temperature'
 frc_ds['TH'].attrs['standard_name'] = 'potential_temperature'
@@ -232,6 +340,9 @@ frc_ds['PHB'].attrs['standard_name'] = ''
 frc_ds['Time'].encoding['units']         = 'hours since 1900-01-01 00:00:0.0'
 frc_ds['Time'].encoding['dtype']         = 'f4'
 frc_ds['Time'].encoding['calendar']      = 'gregorian'
+
+frc_ds['west_east'].encoding['dtype']      = 'i4'
+frc_ds['south_north'].encoding['dtype']    = 'i4'
 
 for n in range(len(varmap)):
     row = varmap[n]
