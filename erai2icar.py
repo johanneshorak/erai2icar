@@ -244,7 +244,6 @@ for nt in range(Nt):
 #=======================================================================
 #= Brunt-Väisälä calculations are done
 #=======================================================================
-logN2_out = np.log(N2_arr) # ICAR stores N as log(N**2) - so this is why we take the natural log here
 
 #print(p[:,:,::-1,:][0,:,0,0])
 #print(erai_ds.p[:,:,::-1,:].values[0,:,0,0])
@@ -285,8 +284,8 @@ frc_ds = xa.Dataset(
         
         'TSK'      : (['Time','bottom_top','south_north','west_east'],TSK),
         
-        'logN2ICAR': (['Time','bottom_top','south_north','west_east'],logN2_out),
-        'logN2EARI': (['Time','bottom_top','south_north','west_east'],N2True_arr),
+        'N2ICAR': (['Time','bottom_top','south_north','west_east'],N2_arr),
+        'N2ERAI': (['Time','bottom_top','south_north','west_east'],N2True_arr),
         'Nmethod'  : (['Time','bottom_top','south_north','west_east'],Nmoist),
     }
 )
@@ -313,13 +312,13 @@ frc_ds['PH'].attrs['units']         = 'm'
 frc_ds['PH'].attrs['long_name']     = 'geopotential height of grid cell'
 frc_ds['PH'].attrs['standard_name'] = 'geopotential_height'
 
-frc_ds['logN2ICAR'].attrs['units']         = 'log s**-2'
-frc_ds['logN2ICAR'].attrs['long_name']     = 'natural log of the squared Brunt Vaisala frequency with modifactions for ICAR'
-frc_ds['logN2ICAR'].attrs['standard_name'] = 'natural log of the squared Brunt Vaisala frequency'
+frc_ds['N2ICAR'].attrs['units']         = 's**-2'
+frc_ds['N2ICAR'].attrs['long_name']     = 'squared Brunt Vaisala frequency with modifactions for ICAR'
+frc_ds['N2ICAR'].attrs['standard_name'] = 'squared Brunt Vaisala frequency'
 
-frc_ds['logN2EARI'].attrs['units']         = 's**-2'
-frc_ds['logN2EARI'].attrs['long_name']     = 'squared Brunt Vaisala frequency calculated from ERAI data'
-frc_ds['logN2EARI'].attrs['standard_name'] = 'squared Brunt Vaisala frequency'
+frc_ds['N2ERAI'].attrs['units']         = 's**-2'
+frc_ds['N2ERAI'].attrs['long_name']     = 'squared Brunt Vaisala frequency calculated from ERAI data'
+frc_ds['N2ERAI'].attrs['standard_name'] = 'squared Brunt Vaisala frequency'
 
 frc_ds['Nmethod'].attrs['units']         = '1'
 frc_ds['Nmethod'].attrs['desc']          = 'dry N ... 0, moist N ... 1'
