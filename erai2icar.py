@@ -146,6 +146,11 @@ P          = erai_ds.p[:,::-1,::-1,:].values
 QVAPOR     = erai_ds.q[:,::-1,::-1,:].values/(1.0-erai_ds.q[:,::-1,::-1,:].values)
 QCLOUD     = erai_ds.clwc[:,::-1,::-1,:].values/(1.0-erai_ds.clwc[:,::-1,::-1,:].values)
 QICE       = erai_ds.ciwc[:,::-1,::-1,:].values/(1.0-erai_ds.ciwc[:,::-1,::-1,:].values)
+
+QVAPOR[QVAPOR<0] = 0
+QCLOUD[QCLOUD<0] = 0
+QICE[QICE<0]     = 0
+
 PH         = erai_ds.ph[:,::-1,::-1,:].values
 HGT        = erai_ds.z[:,::-1,:].values/9.81
 TH         = erai_ds.t[:,::-1,::-1,:].values*((10.**5)/P)**(0.2854)
